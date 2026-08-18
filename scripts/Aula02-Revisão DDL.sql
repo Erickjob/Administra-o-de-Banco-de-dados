@@ -6,7 +6,7 @@ Create table funcionario(
     pnome varchar (50) not null, -- varchar a capacidademáxima que pode
     unome varchar(50) not null,
     email varchar(50) unique,
-    endereco varchar(100),
+    endereco varchar(100) set default 'Macau-RN',
     salario numeric(7,2),
     data_nasc date,
     sexo char(1), --M,F
@@ -16,6 +16,9 @@ Create table funcionario(
     constraint funcionario_salario_check
     check (salario> 2000 and salario <=15000)
 
+    add constraint funcionario_sexo_check
+    check (sexo) in ('m', 'f', 'o', 'M', 'F', 'O')
+
 
 );
 
@@ -23,11 +26,17 @@ create table departamento(
     numero smallint primary key,
     nome varchar(50) unique,
     cpf_gerente char(11)
+    data_ini date not null
 
 );
+
+
 -- i './scripts/Aula02-Revisão DDL.sql'
 -- ver todas as tabelas \dt
 -- psql -h 127.0.0.1 -U admin -d padb
+
+
+
 
 --Adicionar um novo atributo
 alter table departamento
@@ -46,8 +55,10 @@ alter table funcionario
 alter column endereco set default 'Macau-RN';
 
  -- Excluir um valor padrão DEFAULT
-alter table funcionario
-alter column endereco drop default;
+
+-- alter table funcionario
+-- alter column endereco drop default;
+
 
 -- Adicionar restrição(constraint) CHECK (check no caso seria verificar)
 alter table funcionario
@@ -57,8 +68,8 @@ check (lower(sexo) in ('m', 'f', 'o', 'M', 'F', 'O'));-- se não quier usar lowe
 
 
 --Excluir uma restrição
-alter table funcionario
-drop constraint if exists funcionario_sexo_check;
+-- alter table funcionario
+-- drop constraint if exists funcionario_sexo_check;
 
 --Adicionar restrição FOREIGN KEY
 alter table funcionario
@@ -70,3 +81,12 @@ on delete no action
 on update cascade; 
 
 --TO DO: adicionar restrições FK para cpf_supervisor e cpf_gerente.
+
+alter table departamento
+add constraint departamento_cpf_gerente_fk
+foreign key(cpf_gerente)
+references funcionario(cpf)
+-- no action. set null, restrict, cascade, set default
+
+on delete set nullon update cascade;
+
