@@ -1,44 +1,61 @@
-drop table if exists funcionario cascade;-- se a tabela existir, vai dropar
+drop table if exists funcionario cascade;
 drop table if exists departamento cascade;
 
-Create table funcionario(
-    cpf char(11) primary key, --char temp preeencher obrigatoriamente todos
-    pnome varchar (50) not null, -- varchar a capacidademáxima que pode
+create table funcionario(
+    cpf char(11) primary key,
+    pnome varchar(50) not null,
     unome varchar(50) not null,
     email varchar(50) unique,
-    endereco varchar(100) set default 'Macau-RN',
+    endereco varchar(100) default 'Macau-RN',
     salario numeric(7,2),
     data_nasc date,
-    sexo char(1), --M,F
-    cpf_sepervisor char(11),
+    sexo char(1),
+    cpf_supervisor char(11),
     numero_departamento smallint,
 
     constraint funcionario_salario_check
-    check (salario> 2000 and salario <=15000)
+    check (salario >= 2000 and salario <= 15000),
 
-    add constraint funcionario_sexo_check
-    check (sexo) in ('m', 'f', 'o', 'M', 'F', 'O')
-
-
+    constraint funcionario_sexo_check
+    check (sexo in ('m', 'f', 'o', 'M', 'F', 'O'))
 );
 
 create table departamento(
     numero smallint primary key,
     nome varchar(50) unique,
-    cpf_gerente char(11)
+    cpf_gerente char(11),
     data_ini date not null
-
 );
 
+/*
 
--- i './scripts/Aula02-Revisão DDL.sql'
--- ver todas as tabelas \dt
--- psql -h 127.0.0.1 -U admin -d padb
+-- Adicionar restrição FOREIGN KEY
+alter table funcionario
+add constraint funcionario_num_dep_fk
+foreign key (numero_departamento)
+references departamento(numero)
+-- no action, set null, restrict, cascade, set default
+on delete no action
+on update cascade;
 
+-- TO DO: adicionar restrições FK para cpf_supervisor e cpf_gerente
+alter table funcionario
+add constraint funcionario_cpf_sup_fk
+foreign key (cpf_supervisor)
+references funcionario(cpf)
+-- no action, set null, restrict, cascade, set default
+on delete set null
+on update cascade;
 
+alter table departamento
+add constraint departamento_cpf_gerente_fk
+foreign key (cpf_gerente)
+references funcionario(cpf)
+-- no action, set null, restrict, cascade, set default
+on delete set null
+on update cascade;
 
-
---Adicionar um novo atributo
+-- Adicionar um novo atributo
 alter table departamento
 add column data_ini date;
 
@@ -46,47 +63,26 @@ add column data_ini date;
 alter table departamento
 alter column data_ini set not null;
 
--- Remover/excluir um atributo
-alter table departamento
-drop column data_ini;
+-- Excluir um atributo
+-- alter table departamento
+-- drop column data_ini;
 
--- Adicionar um valor padão DEFAULT
+-- Adicionar um valor padrão DEFAULT
 alter table funcionario
 alter column endereco set default 'Macau-RN';
 
- -- Excluir um valor padrão DEFAULT
-
+-- Excluir um valor padrão DEFAULT
 -- alter table funcionario
 -- alter column endereco drop default;
 
-
--- Adicionar restrição(constraint) CHECK (check no caso seria verificar)
+-- Adicionar restrição (constraint) CHECK
 alter table funcionario
 add constraint funcionario_sexo_check
---check (lower(sexo) in ('m', 'f', 'o')); --se quiser ver se ertence a um conjunto de valores
-check (lower(sexo) in ('m', 'f', 'o', 'M', 'F', 'O'));-- se não quier usar lower, terá que colocar tanto maiusculo quanto minúsculo como ('m', 'f', 'o', 'M', 'F', 'O') 
+-- check (lower(sexo) in ('m', 'f', 'o'));
+check (sexo in ('m', 'f', 'o', 'M', 'F', 'O'));
 
-
---Excluir uma restrição
--- alter table funcionario
--- drop constraint if exists funcionario_sexo_check;
-
---Adicionar restrição FOREIGN KEY
+-- Excluir restrição
 alter table funcionario
-add constraint funcionar_num_dep_fk
-foreign key(numero_departamento)
-references departamento(numero)
--- no action. set null, restrict, cascade, set default
-on delete no action
-on update cascade; 
+drop constraint if exists funcionario_sexo_check;
 
---TO DO: adicionar restrições FK para cpf_supervisor e cpf_gerente.
-
-alter table departamento
-add constraint departamento_cpf_gerente_fk
-foreign key(cpf_gerente)
-references funcionario(cpf)
--- no action. set null, restrict, cascade, set default
-
-on delete set nullon update cascade;
-
+*/
